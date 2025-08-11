@@ -7,6 +7,7 @@ import { Rarity } from './domain/value-objects/Rarity';
 import { EventDispatcher } from './infrastructure/events/EventDispatcher';
 import { GachaExecutedHandler } from './application/handlers/GachaExecutedHandler';
 import { ItemObtainedHandler } from './application/handlers/ItemObtainedHandler';
+import { CurrencySpentHandler } from './application/handlers/CurrencySpentHandler';
 import { GachaExecutedEvent } from './domain/events/GachaExecutedEvent';
 import { ItemObtainedEvent } from './domain/events/ItemObtainedEvent';
 import { CurrencySpentEvent } from './domain/events/CurrencySpentEvent';
@@ -199,6 +200,7 @@ async function runGachaSystemDemo(): Promise<void> {
   console.log('⚙️ イベントハンドラーを登録中...');
   eventDispatcher.subscribe('GachaExecuted', new GachaExecutedHandler());
   eventDispatcher.subscribe('ItemObtained', new ItemObtainedHandler());
+  eventDispatcher.subscribe('CurrencySpent', new CurrencySpentHandler());
   
   eventDispatcher.showRegisteredHandlers();
 
