@@ -2,6 +2,7 @@
 
 import { GachaItem } from './GachaItem';
 import { DomainEvent } from '../events/DomainEvent';
+import { CurrencySpentEvent } from '../events/CurrencySpentEvent';
 
 /**
  * プレイヤーを表すエンティティ
@@ -167,9 +168,10 @@ export class Player {
    * ビジネスルール: 所持金を超えて消費できない、負の値は消費できない
    * 
    * @param amount 消費する通貨量
+   * @param reason 消費理由（オプション、イベント発行時に使用）
    * @throws Error 残高不足または負の値を消費しようとした場合
    */
-  spendCurrency(amount: number): void {
+  spendCurrency(amount: number, reason: string = 'unknown'): void {
     if (amount < 0) {
       throw new Error(`通貨の消費量は0以上である必要があります: ${amount}`);
     }
@@ -180,8 +182,14 @@ export class Player {
 
     this._gachaCurrency -= amount;
 
-    // TODO: 後でイベント発行を追加
-    // this.addEvent(new CurrencySpentEvent(this._id, amount, this._gachaCurrency));
+    // イベント発行（reasonパラメータを使用）
+    const event = new CurrencySpentEvent(
+      this._id,
+      amount,
+      this._gachaCurrency,
+      reason
+    );
+    this.addEvent(event);
   }
 
   /**
