@@ -18,18 +18,18 @@ export class GachaItem {
    */
   constructor(
     private readonly _id: string,
-    private readonly _name: string,
+    private readonly _itemName: string,
     private readonly _rarity: Rarity,
     private readonly _description: string = '',
     private readonly _createdAt: Date = new Date()
   ) {
     // バリデーション: IDは必須
-    if (!id || id.trim() === '') {
+    if (!_id || _id.trim() === '') {
       throw new Error('GachaItem ID cannot be empty');
     }
 
     // バリデーション: 名前は必須
-    if (!name || name.trim() === '') {
+    if (!_itemName || _itemName.trim() === '') {
       throw new Error('GachaItem name cannot be empty');
     }
   }
@@ -51,7 +51,7 @@ export class GachaItem {
    * @returns アイテム名
    */
   get name(): string {
-    return this._name;
+    return this._itemName;
   }
 
   /**
@@ -84,5 +84,25 @@ export class GachaItem {
     return this._createdAt;
   }
 
-  // TODO: 次のステップでエンティティの比較メソッドを実装
+  /**
+   * 2つのGachaItemが同じエンティティかどうかを判定する
+   * エンティティの同一性はIDで判定される
+   * 
+   * @param other 比較対象のGachaItem
+   * @returns 同じエンティティの場合true、異なる場合false
+   */
+  equals(other: GachaItem): boolean {
+    // エンティティの同一性はIDのみで判定
+    return this._id === other._id;
+  }
+
+  /**
+   * GachaItemの情報を文字列で表現する
+   * ログ出力やデバッグ、UI表示に使用
+   * 
+   * @returns アイテムの詳細情報を含む文字列
+   */
+  toString(): string {
+    return `${this._itemName} [${this._rarity.value}] (ID: ${this._id})`;
+  }
 }

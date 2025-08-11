@@ -1,5 +1,3 @@
-// src/domain/value-objects/Rarity.ts
-
 /**
  * レアリティを表す値オブジェクト
  * ガチャアイテムのレア度と排出確率を管理
