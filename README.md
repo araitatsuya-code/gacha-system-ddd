@@ -19,6 +19,83 @@ TypeScriptでドメイン駆動設計（DDD）とイベント駆動アーキテ�
 - **設計パターン**: DDD, イベント駆動, Repository, Factory
 - **アーキテクチャ**: レイヤードアーキテクチャ
 
+## 📁 プロジェクト構造
+
+```
+src/
+├── domain/                     # ドメイン層
+│   ├── entities/              # エンティティ
+│   │   ├── Player.ts          # プレイヤーエンティティ
+│   │   └── GachaItem.ts       # ガチャアイテムエンティティ
+│   ├── value-objects/         # 値オブジェクト
+│   │   └── Rarity.ts          # レアリティ値オブジェクト
+│   └── events/                # ドメインイベント
+│       ├── DomainEvent.ts     # 基底イベントクラス
+│       ├── GachaExecutedEvent.ts
+│       ├── ItemObtainedEvent.ts
+│       └── CurrencySpentEvent.ts
+├── application/               # アプリケーション層
+│   └── handlers/              # イベントハンドラー
+│       ├── GachaExecutedHandler.ts
+│       ├── ItemObtainedHandler.ts
+│       └── CurrencySpentHandler.ts
+├── infrastructure/            # インフラ層
+│   └── events/
+│       └── EventDispatcher.ts # イベントディスパッチャー
+└── gacha-system-demo.ts       # デモンストレーション
+```
+
+## 🎮 システム概要
+
+### ドメインモデル
+
+#### 🎯 Player（プレイヤー）
+```typescript
+const player = new Player('player_001', 'タロウ', 1000);
+player.spendCurrency(100, 'gacha');
+player.addItem(item);
+```
+
+#### 🗡️ GachaItem（ガチャアイテム）
+```typescript
+const excalibur = new GachaItem(
+  'sword_001', 
+  'エクスカリバー', 
+  Rarity.create('SSR'),
+  '伝説の聖剣。選ばれし者のみが扱える。'
+);
+```
+
+#### ⭐ Rarity（レアリティ）
+```typescript
+const ssr = Rarity.create('SSR');
+console.log(ssr.rate);        // 4.0（4%）
+console.log(ssr.displayName); // 'スーパースペシャルレア'
+```
+
+### イベント駆動フロー
+
+```mermaid
+graph TD
+    A[プレイヤーがガチャ実行] --> B[通貨消費]
+    B --> C[CurrencySpentEvent発行]
+    C --> D[アイテム抽選]
+    D --> E[アイテム獲得]
+    E --> F[ItemObtainedEvent発行]
+    F --> G[GachaExecutedEvent発行]
+    
+    C --> H[CurrencySpentHandler]
+    F --> I[ItemObtainedHandler]
+    G --> J[GachaExecutedHandler]
+    
+    H --> K[支出統計更新]
+    H --> L[残高警告]
+    I --> M[演出実行]
+    I --> N[図鑑登録]
+    J --> O[実績解除]
+    J --> P[ガチャ統計更新]
+```
+
 ## 📖 学習の進め方
 
 ### 段階1: DDD基礎理解 ✅
@@ -183,11 +260,4 @@ npm install
 
 # デモを実行
 npx ts-node src/gacha-system-demo.ts
-```
-
-### テスト実行
-```bash
-# 各コンポーネントの動作確認
-npx ts-node src/test-rarity.ts
-npx ts-node src/test-item-event.ts
 ```
